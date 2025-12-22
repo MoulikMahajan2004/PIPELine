@@ -7,10 +7,10 @@ package pipeline
 # all_resources contains r if {
 #   r := input.planned_values.root_module.resources[_]
 # }
-warn contians msg if {
+deny contians msg if {
   r := input.planned_values.root_module.resources[_]
   r.type == "aws_instance"
-  r.mode =="managed"
+  r.mode =="unmanaged"
   msg:= sprintf("Resource %s of type %s in mode %s", [r.address, r.type, r.mode])
 }
 
