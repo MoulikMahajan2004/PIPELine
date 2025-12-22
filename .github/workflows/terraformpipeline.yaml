@@ -50,7 +50,7 @@ jobs:
 
       - name: create json file for the opa policy 
         working-directory: terra
-        run : terraform plan -json tfplan.binary > terraformplan.json
+        run : terraform show -json tfplan.binary > terraformplan.json
 
       - name: Run OPA policy check
         working-directory: terra
