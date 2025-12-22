@@ -90,7 +90,8 @@ jobs:
 
     - name: Terraform Apply
       working-directory: terra
-      run: terraform apply -auto-approve tfplan.binary
+      run: terraform apply -auto-approve 
+      #upating the code here
 
 
 
