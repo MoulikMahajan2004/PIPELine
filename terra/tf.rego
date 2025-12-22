@@ -7,7 +7,7 @@ package pipeline
 # all_resources contains r if {
 #   r := input.planned_values.root_module.resources[_]
 # }
-deny contians msg if {
+deny contains msg if {
   r := input.planned_values.root_module.resources[_]
   r.type == "aws_instance"
   r.mode =="unmanaged"
