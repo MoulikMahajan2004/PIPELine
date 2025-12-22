@@ -36,12 +36,13 @@ jobs:
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
       
-      - name: OPA policy executable 
-        run: curl -L -o opa https://openpolicyagent.org/downloads/latest/opa_linux_arm64
-      - name: Make OPA executable
-        run: chmod 755 ./opa
-      - name: Move OPA to /usr/local/bin
-        run: sudo mv ./opa /usr/local/bin/opa
+      - name: Install OPA (linux_amd64)
+        run: |
+          curl -L -o opa https://openpolicyagent.org/downloads/latest/opa_linux_amd64
+          chmod +x opa
+          sudo mv opa /usr/local/bin/opa
+          opa version
+
       - name: Terraform Init
         working-directory: terra
         run: terraform init -input=false
