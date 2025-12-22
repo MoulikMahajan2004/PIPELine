@@ -19,7 +19,7 @@ permissions:
 jobs: 
   # setting up the job name it does not matter we keep we can keep it like pipeline job or anything else 
   plan: 
-    Runs-on: ubuntu-latest
+    runs-on: ubuntu-latest
 
     steps:
     #The action is to checkout the repo
@@ -27,7 +27,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v6
+        uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -54,30 +54,29 @@ jobs:
 #This is the second job which will apply the changes only if the first job is successful 
 #This job will be seccessful only on the push event to the main branch
 
-apply:
-  needs: plan
-  Runs-on: ubuntu-latest
-  if: github.ref == "refs/heads/main" && github.event_name =="push"
-  
-  steps:
-      - name: Checkout repo
-        uses: actions/checkout@v4
+  apply:
+    needs: plan
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    steps:
+    - name: Checkout repo
+      uses: actions/checkout@v4
 
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v6
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-east-1
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: us-east-1
+ 
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v3
 
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v3
+    - name: Terraform Init
+      run: terraform init
 
-      - name: Terraform Init
-        run: terraform init
-
-      - name: Terraform Apply
-        run: terraform apply -auto-approve tfplan.binary
+    - name: Terraform Apply
+      run: terraform apply -auto-approve tfplan.binary
 
 
 
