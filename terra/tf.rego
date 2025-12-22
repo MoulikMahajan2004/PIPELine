@@ -4,15 +4,14 @@ package pipeline
 # Helpers
 # -----------------------
 
-all_resources contains r if {
-  r := input.planned_values.root_module.resources[_]
-}
+# all_resources contains r if {
+#   r := input.planned_values.root_module.resources[_]
+# }
 warn contians msg if {
-  r := all_resources[_]
+  r := input.planned_values.root_module.resources[_]
   r.type == "aws_instance"
   r.mode =="managed"
   msg:= sprintf("Resource %s of type %s in mode %s", [r.address, r.type, r.mode])
-  
 }
 
 # ec2_instances contains r if {
