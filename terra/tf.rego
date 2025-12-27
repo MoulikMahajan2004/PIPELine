@@ -18,7 +18,7 @@ deny contains msg if {
 #   r := all_resources[_]
 #   r.type == "aws_instance"
 # }
-
+#adding comment simply to check the pipeloine commits 
 # # Safe helper: treat missing value as false
 
 # # created a small function 
