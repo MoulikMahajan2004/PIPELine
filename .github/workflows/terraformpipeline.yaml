@@ -84,7 +84,11 @@ jobs:
 
     - name: Setup Terraform
       uses: hashicorp/setup-terraform@v3
-    
+
+    #installing the cosgin for the verification check 
+    - name: Install Cosign
+      uses: sigstore/cosign-installer@v4.0.0
+    #installed the cosgin to veruify the signature 
     - name: verification sigstore
       run: |
         cosign verify-blob --bundle terra/tfplan.binary.sigstore.json
