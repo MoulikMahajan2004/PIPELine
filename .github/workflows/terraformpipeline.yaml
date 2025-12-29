@@ -13,6 +13,7 @@ on:
 #what should the policy do 
 permissions: 
   contents: read 
+  id-token: write
 # --------------------------
 # setting up the branch for the main 
 # job 
@@ -26,13 +27,19 @@ jobs:
       - name: checkoutrepo
         uses: actions/checkout@v4
 
+      
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-1
-
+       # installing cosign to sign the tfplan binary file
+      - name: Install Cosign
+        uses: sigstore/cosign-installer@v4.0.0
+      # verify the installation
+      - name: Check install!
+        run: cosign version
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
       
@@ -54,10 +61,17 @@ jobs:
       - name: Save tfplan binary file
         working-directory: terra
         run: terraform plan -out=tfplan.binary
+      #checking the terraform binary file 
+      - name: signing_files
+        uses: sigstore/gh-action-sigstore-python@v3.1.0
+        with:
+          inputs: terra/tfplan.binary
+
 
       - name: create json file for the opa policy 
         working-directory: terra
         run : terraform show -json tfplan.binary > terraformplan.json
+
 
       - name: Run OPA policy check
         working-directory: terra
@@ -84,16 +98,22 @@ jobs:
 
     - name: Setup Terraform
       uses: hashicorp/setup-terraform@v3
-
     #installing the cosgin for the verification check 
     - name: Install Cosign
       uses: sigstore/cosign-installer@v4.0.0
-    #installed the cosgin to veruify the signature 
-    - name: verification sigstore
-      run: |
-        cosign verify-blob --bundle terra/tfplan.binary.sigstore.json
-        echo $?
 
+    # - name: verification sigstore
+    #   run: |
+    #     cosign verify-blob --bundle terra/tfplan.binary.sigstore.json
+    #     echo $?
+    - name: verify_signed_tfplan
+      uses: sigstore/gh-action-sigstore-python@v3.1.0  
+      with:
+        inputs: terra/tfplan.binary
+        verify: true
+        #https://github.com/MoulikMahajan2004/PIPELine.git
+        verify-cert-identity: https://github.com/MoulikMahajan2004/PIPELine.git/.github/workflows/terraformpipeline.yaml@refs/heads/main
+        verify-oidc-issuer: https://token.actions.githubusercontent.com
 
     - name: Terraform Init
       working-directory: terra
