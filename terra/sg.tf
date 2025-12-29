@@ -1,7 +1,7 @@
 resource "aws_security_group" "tfsg" {
   vpc_id = aws_vpc.Tfpipelinevpc.id
   tags = {
-    Name = "tfsg"
+    Name = "newsgupdatedone"
   }
 }
 
